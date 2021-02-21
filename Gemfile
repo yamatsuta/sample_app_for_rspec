@@ -17,6 +17,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'rspec-rails'
   gem 'capybara'
+  gem 'webdrivers'
 end
 
 group :development do

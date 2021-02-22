@@ -24,11 +24,27 @@ RSpec.describe "Tasks", type: :system do
       it_behaves_like 'ページへのアクセスが失敗しログイン画面に飛ばされる'
     end
 
-    context 'マイページへアクセスした時' do
+    context 'タスクの詳細ページへアクセスした時' do
       before do
-        visit user_path(user)
+        visit task_path(task)
       end
-      it_behaves_like 'ページへのアクセスが失敗しログイン画面に飛ばされる'
+      it 'タスクの詳細情報が表示される' do
+        expect(page).to have_content task.title
+        expect(current_path).to eq task_path(task)
+      end
+    end
+
+    context 'タスクの一覧ページへアクセスした時' do
+      before do
+        visit tasks_path
+        task_list = create(:task, 3)
+      end
+      it '全てのユーザーのタスク情報が表示される' do
+        expect(page).to have_content task_list[0].title
+        expect(page).to have_content task_list[1].title
+        expect(page).to have_content task_list[2].title
+        expect(current_path).to eq tasks_path
+      end
     end
   end
 
@@ -40,13 +56,16 @@ RSpec.describe "Tasks", type: :system do
           visit new_task_path
           fill_in 'Title', with: 'new_title'
           fill_in 'Content', with: 'new_content'
-          find("option[value='todo']").select_option
-          fill_in 'Deadline', with: 1.week.from_now
+          select 'doing', from: 'Status'
+          fill_in 'Deadline', with: DateTime.new(2099,12,31,11,59)
           click_button 'Create Task'
         end
         it 'タスクの新規登録が成功する' do
           expect(page).to have_content "Task was successfully created."
           expect(page).to have_content 'new_title'
+          expect(page).to have_content 'new_content'
+          expect(page).to have_content 'doing'
+          expect(page).to have_content '2099/12/31 11:59'
         end
       end
     end
@@ -70,6 +89,7 @@ RSpec.describe "Tasks", type: :system do
     end
 
     describe 'タスク削除機能' do
+      let!(:task) { create(:task, user: user) }
       before { login(user) }
       context 'タスクの削除ボタンをクリックした時' do
         before do
@@ -81,6 +101,7 @@ RSpec.describe "Tasks", type: :system do
         it 'タスクの削除が成功する' do
           expect(page).to have_content "Task was successfully destroyed."
           expect(current_path).to eq tasks_path
+          expect(page).not_to have_content task.title
         end
       end
     end

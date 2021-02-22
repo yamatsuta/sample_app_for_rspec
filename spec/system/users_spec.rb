@@ -122,11 +122,15 @@ RSpec.describe "Users", type: :system do
     describe 'マイページ' do
       context 'タスクを作成した時' do
         before do
-          task = create(:task, title: 'new_task', user: user)
+          task = create(:task, title: 'new_task', status: 'doing', user: user)
           visit user_path(user)
         end
         it '新規作成したタスクが表示される' do
           expect(page).to have_content 'new_task'
+          expect(page).to have_content 'doing'
+          expect(page).to have_content 'Show'
+          expect(page).to have_content 'Edit'
+          expect(page).to have_content 'Destroy'
         end
       end
     end

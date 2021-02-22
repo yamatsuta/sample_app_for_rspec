@@ -33,7 +33,7 @@ RSpec.describe "Tasks", type: :system do
         expect(current_path).to eq task_path(task)
       end
     end
-    
+
     context 'タスクの一覧ページへアクセスした時' do
       before do
         visit tasks_path
@@ -56,13 +56,16 @@ RSpec.describe "Tasks", type: :system do
           visit new_task_path
           fill_in 'Title', with: 'new_title'
           fill_in 'Content', with: 'new_content'
-          find("option[value='todo']").select_option
-          fill_in 'Deadline', with: 1.week.from_now
+          select 'doing', from: 'Status'
+          fill_in 'Deadline', with: DateTime.new(2099,12,31,11,59)
           click_button 'Create Task'
         end
         it 'タスクの新規登録が成功する' do
           expect(page).to have_content "Task was successfully created."
           expect(page).to have_content 'new_title'
+          expect(page).to have_content 'new_content'
+          expect(page).to have_content 'doing'
+          expect(page).to have_content '2099/12/31 11:59'
         end
       end
     end

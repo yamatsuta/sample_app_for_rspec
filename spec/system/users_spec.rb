@@ -44,6 +44,7 @@ RSpec.describe "Users", type: :system do
         it 'ユーザーの新規登録が失敗する' do
           expect(current_path).to eq users_path
           expect(page).to have_content "Email has already been taken"
+          expect(page).to have_field 'Email', with: user.email
         end
       end
     end

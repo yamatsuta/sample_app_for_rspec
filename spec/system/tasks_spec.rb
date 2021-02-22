@@ -24,11 +24,27 @@ RSpec.describe "Tasks", type: :system do
       it_behaves_like 'ページへのアクセスが失敗しログイン画面に飛ばされる'
     end
 
-    context 'マイページへアクセスした時' do
+    context 'タスクの詳細ページへアクセスした時' do
       before do
-        visit user_path(user)
+        visit task_path(task)
       end
-      it_behaves_like 'ページへのアクセスが失敗しログイン画面に飛ばされる'
+      it 'タスクの詳細情報が表示される' do
+        expect(page).to have_content task.title
+        expect(current_path).to eq task_path(task)
+      end
+    end
+    
+    context 'タスクの一覧ページへアクセスした時' do
+      before do
+        visit tasks_path
+        task_list = create(:task, 3)
+      end
+      it '全てのユーザーのタスク情報が表示される' do
+        expect(page).to have_content task_list[0].title
+        expect(page).to have_content task_list[1].title
+        expect(page).to have_content task_list[2].title
+        expect(current_path).to eq tasks_path
+      end
     end
   end
 
